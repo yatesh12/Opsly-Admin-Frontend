@@ -8,7 +8,7 @@ import { Users, Bot, MessageSquare, FileText, IndianRupee, Activity, AlertCircle
 import type { DashboardData } from '../types'
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
 
-function fmt(paise: number) { return `₹${(paise / 100).toLocaleString('en-IN')}` }
+function fmt(paise: number) { return `₹${Math.round(paise / 100).toLocaleString('en-IN')}` }
 
 const statCards = [
   { key: 'total_users', icon: Users, label: 'Total Users', color: '#3b82f6' },

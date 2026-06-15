@@ -8,7 +8,7 @@ import { Header } from '../components/layout/Header'
 import { Search, ChevronLeft, ChevronRight, Download, IndianRupee } from 'lucide-react'
 import type { PaginatedBilling, RevenueSummary } from '../types'
 
-function fmt(paise: number) { return `₹${(paise / 100).toLocaleString('en-IN')}` }
+function fmt(paise: number) { return `₹${Math.round(paise / 100).toLocaleString('en-IN')}` }
 
 export function BillingPage() {
   const [data, setData] = useState<PaginatedBilling | null>(null)

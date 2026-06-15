@@ -11,8 +11,9 @@ import { Plus, Edit3, Trash2 } from 'lucide-react'
 import type { PaginatedPlans, PlanSummary } from '../types'
 
 function fmt(price: number, currency = 'INR') {
-  if (currency === 'INR') return `₹${price.toLocaleString('en-IN')}`
-  return `${currency} ${price.toFixed(0)}`
+  const rounded = Math.round(price)
+  if (currency === 'INR') return `₹${rounded.toLocaleString('en-IN')}`
+  return `${currency} ${rounded.toFixed(0)}`
 }
 
 function formatFeatures(features: Record<string, any> | null): string {

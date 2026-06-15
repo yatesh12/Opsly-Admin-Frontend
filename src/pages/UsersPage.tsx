@@ -9,7 +9,7 @@ import { Header } from '../components/layout/Header'
 import { Search, ChevronLeft, ChevronRight, Eye, Ban, Trash2, Activity, IndianRupee } from 'lucide-react'
 import type { PaginatedUsers, UserDetail, UserActivityLog, UserBillingEntry } from '../types'
 
-function fmt(paise: number) { return `₹${(paise / 100).toLocaleString('en-IN')}` }
+function fmt(paise: number) { return `₹${Math.round(paise / 100).toLocaleString('en-IN')}` }
 
 export function UsersPage() {
   const [data, setData] = useState<PaginatedUsers | null>(null)

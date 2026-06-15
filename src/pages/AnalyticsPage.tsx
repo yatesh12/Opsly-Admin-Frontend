@@ -8,7 +8,7 @@ import type { AnalyticsOverview, UsageAnalytics, RevenueAnalytics, UserEngagemen
 
 const CHART_COLORS = ['#43009a', '#7a1aff', '#b380ff', '#944dff', '#d1b3ff', '#22c55e', '#f59e0b', '#ef4444']
 
-function fmt(paise: number) { return `₹${(paise / 100).toLocaleString('en-IN')}` }
+function fmt(paise: number) { return `₹${Math.round(paise / 100).toLocaleString('en-IN')}` }
 
 type Tab = 'overview' | 'revenue' | 'engagement' | 'plans' | 'inactivity' | 'usage' | 'cohorts'
 
