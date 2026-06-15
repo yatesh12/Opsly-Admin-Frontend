@@ -79,6 +79,7 @@ export function UsersPage() {
             <option value="">All Plans</option>
             <option value="free">Free</option>
             <option value="starter">Starter</option>
+            <option value="builder">Builder</option>
             <option value="growth">Growth</option>
             <option value="pro">Pro</option>
             <option value="enterprise">Enterprise</option>
