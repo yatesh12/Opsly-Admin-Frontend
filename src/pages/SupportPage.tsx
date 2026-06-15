@@ -25,9 +25,7 @@ export function SupportPage() {
     const params = new URLSearchParams({ page: String(page), per_page: '20' })
     if (statusFilter) params.set('status', statusFilter)
     api.get<PaginatedTickets>(`/api/v1/admin/support/tickets?${params}`)
-      .then(setData)
-      .catch(console.error)
-      .finally(() => setLoading(false))
+      .then(setData).catch(console.error).finally(() => setLoading(false))
   }
 
   useEffect(() => { fetchTickets() }, [page, statusFilter])
@@ -54,35 +52,26 @@ export function SupportPage() {
   }
 
   const sendReply = async () => {
-    if (!replyText.trim() || !selectedTicket) return
+    if (!replyText.trim()) return
     setSending(true)
     try {
-      await api.post(`/api/v1/admin/support/tickets/${selectedTicket.id}/replies`, { message: replyText, is_internal: false })
-      const updated = await api.get<TicketReply[]>(`/api/v1/admin/support/tickets/${selectedTicket.id}/replies`)
+      await api.post(`/api/v1/admin/support/tickets/${selectedTicket!.id}/replies`, { message: replyText })
+      const updated = await api.get<TicketReply[]>(`/api/v1/admin/support/tickets/${selectedTicket!.id}/replies`)
       setReplies(updated)
       setReplyText('')
-      if (selectedTicket.status === 'open') {
-        await updateStatus(selectedTicket.id, 'in_progress')
-      }
     } catch (err) { console.error(err) }
     finally { setSending(false) }
   }
 
-  const statusColors: Record<string, string> = { open: 'warning', in_progress: 'info', resolved: 'success', closed: 'default' }
+  const statusColors: Record<string, string> = { open: 'info', in_progress: 'warning', resolved: 'success', closed: 'default' }
   const priorityColors: Record<string, string> = { low: 'default', medium: 'warning', high: 'danger', urgent: 'danger' }
 
   return (
     <div>
-      <Header title="Support" subtitle="Manage support tickets and inquiries" />
+      <Header title="Support" subtitle="Manage support tickets" />
 
       <Card>
-        <div style={{ display: 'flex', gap: 12, marginBottom: 16 }}>
-          <div style={{ flex: 1, position: 'relative' }}>
-            <Search size={16} style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
-            <input placeholder="Search tickets..."
-              style={{ width: '100%', padding: '8px 12px 8px 36px', background: 'var(--bg-elevated)', border: '1px solid var(--border)', borderRadius: 8, color: 'var(--text-primary)', fontSize: 14, fontFamily: 'inherit', outline: 'none' }}
-            />
-          </div>
+        <div style={{ display: 'flex', gap: 12, marginBottom: 16, alignItems: 'center' }}>
           <select value={statusFilter} onChange={(e) => { setStatusFilter(e.target.value); setPage(1) }}
             style={{ padding: '8px 12px', background: 'var(--bg-elevated)', border: '1px solid var(--border)', borderRadius: 8, color: 'var(--text-primary)', fontSize: 14, fontFamily: 'inherit', outline: 'none', width: 160 }}>
             <option value="">All Status</option>
@@ -99,22 +88,25 @@ export function SupportPage() {
               <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                 <thead>
                   <tr style={{ borderBottom: '1px solid var(--border)' }}>
-                    {['Subject', 'User', 'Status', 'Priority', 'Category', 'Replies', 'Updated', 'Actions'].map(h => (
+                    {['Subject', 'User', 'Status', 'Priority', 'Replies', 'Created'].map(h => (
                       <th key={h} style={{ textAlign: 'left', padding: '10px 12px', fontSize: 12, fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase' }}>{h}</th>
                     ))}
                   </tr>
                 </thead>
                 <tbody>
-                  {data?.tickets.map(ticket => (
-                    <tr key={ticket.id} style={{ borderBottom: '1px solid var(--border)' }}>
-                      <td style={{ padding: '12px', fontSize: 14, fontWeight: 500 }}>{ticket.subject}</td>
-                      <td style={{ padding: '12px', fontSize: 13, color: 'var(--text-secondary)' }}>{ticket.user_email || 'Anonymous'}</td>
-                      <td style={{ padding: '12px' }}><Badge variant={(statusColors[ticket.status] || 'default') as any}>{ticket.status}</Badge></td>
-                      <td style={{ padding: '12px' }}><Badge variant={(priorityColors[ticket.priority] || 'default') as any}>{ticket.priority}</Badge></td>
-                      <td style={{ padding: '12px', fontSize: 13, color: 'var(--text-secondary)' }}>{ticket.category}</td>
-                      <td style={{ padding: '12px', fontSize: 14 }}>{ticket.reply_count}</td>
-                      <td style={{ padding: '12px', fontSize: 13, color: 'var(--text-secondary)' }}>{new Date(ticket.updated_at).toLocaleDateString()}</td>
-                      <td style={{ padding: '12px' }}><Button size="sm" variant="ghost" onClick={() => viewTicket(ticket.id)}><MessageSquare size={14} /></Button></td>
+                  {data?.tickets.map(t => (
+                    <tr key={t.id} style={{ borderBottom: '1px solid var(--border)', cursor: 'pointer' }} onClick={() => viewTicket(t.id)}>
+                      <td style={{ padding: '12px', fontSize: 14 }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                          <MessageSquare size={14} style={{ color: 'var(--text-muted)' }} />
+                          {t.subject}
+                        </div>
+                      </td>
+                      <td style={{ padding: '12px', fontSize: 13, color: 'var(--text-secondary)' }}>{t.user_email || 'Anonymous'}</td>
+                      <td style={{ padding: '12px' }}><Badge variant={(statusColors[t.status] || 'default') as any}>{t.status}</Badge></td>
+                      <td style={{ padding: '12px' }}><Badge variant={(priorityColors[t.priority] || 'default') as any}>{t.priority}</Badge></td>
+                      <td style={{ padding: '12px', fontSize: 14 }}>{t.reply_count}</td>
+                      <td style={{ padding: '12px', fontSize: 13, color: 'var(--text-secondary)' }}>{new Date(t.created_at).toLocaleDateString()}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -122,7 +114,7 @@ export function SupportPage() {
             </div>
             {data && data.total_pages > 1 && (
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 16 }}>
-                <span style={{ fontSize: 13, color: 'var(--text-secondary)' }}>Showing {((page - 1) * 20) + 1}-{Math.min(page * 20, data.total)} of {data.total}</span>
+                <span style={{ fontSize: 13, color: 'var(--text-secondary)' }}>{((page - 1) * 20) + 1}-{Math.min(page * 20, data.total)} of {data.total}</span>
                 <div style={{ display: 'flex', gap: 6 }}>
                   <Button size="sm" variant="secondary" disabled={page <= 1} onClick={() => setPage(page - 1)}><ChevronLeft size={14} /></Button>
                   <Button size="sm" variant="secondary" disabled={page >= data.total_pages} onClick={() => setPage(page + 1)}><ChevronRight size={14} /></Button>
@@ -133,55 +125,54 @@ export function SupportPage() {
         )}
       </Card>
 
-      <Modal isOpen={showDetail} onClose={() => setShowDetail(false)} title={`Ticket: ${selectedTicket?.subject}`} width={640}>
+      <Modal isOpen={showDetail} onClose={() => setShowDetail(false)} title="Ticket Details" width={640}>
         {selectedTicket && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-            <div style={{ display: 'flex', gap: 8 }}>
-              <Badge variant={(statusColors[selectedTicket.status] || 'default') as any}>{selectedTicket.status}</Badge>
-              <Badge variant={(priorityColors[selectedTicket.priority] || 'default') as any}>{selectedTicket.priority}</Badge>
-              <span style={{ fontSize: 12, color: 'var(--text-muted)', alignSelf: 'center' }}>{selectedTicket.category}</span>
+            <div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+                <h3 style={{ fontSize: 16, fontWeight: 600 }}>{selectedTicket.subject}</h3>
+                <Badge variant={(statusColors[selectedTicket.status] || 'default') as any}>{selectedTicket.status}</Badge>
+                <Badge variant={(priorityColors[selectedTicket.priority] || 'default') as any}>{selectedTicket.priority}</Badge>
+              </div>
+              <p style={{ fontSize: 13, color: 'var(--text-muted)' }}>From: {selectedTicket.user_email || 'Anonymous'} | Category: {selectedTicket.category}</p>
             </div>
 
             <div style={{ padding: 12, background: 'var(--bg-elevated)', borderRadius: 8 }}>
-              <p style={{ fontSize: 14, fontWeight: 500, marginBottom: 4 }}>{selectedTicket.user_email || 'Anonymous'}</p>
-              <p style={{ fontSize: 14, color: 'var(--text-secondary)', lineHeight: 1.6 }}>{selectedTicket.message}</p>
+              <p style={{ fontSize: 14, whiteSpace: 'pre-wrap' }}>{selectedTicket.message}</p>
             </div>
 
             {replies.length > 0 && (
               <div>
-                <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-muted)', marginBottom: 8 }}>Replies ({replies.length})</p>
+                <h4 style={{ fontSize: 13, fontWeight: 600, marginBottom: 8 }}>Replies ({replies.length})</h4>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                  {replies.map(reply => (
-                    <div key={reply.id} style={{ padding: 12, background: reply.is_internal ? 'rgba(245,158,11,0.08)' : 'var(--bg-elevated)', borderRadius: 8, borderLeft: reply.is_internal ? '3px solid var(--warning)' : '3px solid var(--brand)' }}>
+                  {replies.map(r => (
+                    <div key={r.id} style={{ padding: 10, background: 'var(--bg-elevated)', borderRadius: 8 }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
-                        <span style={{ fontSize: 12, fontWeight: 600, color: reply.is_internal ? 'var(--warning)' : 'var(--text-primary)' }}>
-                          {reply.admin_name || 'Admin'} {reply.is_internal ? '(Internal)' : ''}
-                        </span>
-                        <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>{new Date(reply.created_at).toLocaleString()}</span>
+                        <span style={{ fontSize: 12, fontWeight: 600 }}>{r.admin_name || 'System'}</span>
+                        <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>{new Date(r.created_at).toLocaleString()}</span>
                       </div>
-                      <p style={{ fontSize: 14, color: 'var(--text-secondary)' }}>{reply.message}</p>
+                      <p style={{ fontSize: 13 }}>{r.message}</p>
                     </div>
                   ))}
                 </div>
               </div>
             )}
 
-            <div style={{ borderTop: '1px solid var(--border)', paddingTop: 12 }}>
+            <div>
+              <h4 style={{ fontSize: 13, fontWeight: 600, marginBottom: 8 }}>Add Reply</h4>
               <div style={{ display: 'flex', gap: 8 }}>
-                <textarea value={replyText} onChange={(e) => setReplyText(e.target.value)} placeholder="Type your reply..."
-                  rows={3}
-                  style={{ flex: 1, padding: 10, background: 'var(--bg-elevated)', border: '1px solid var(--border)', borderRadius: 8, color: 'var(--text-primary)', fontSize: 14, fontFamily: 'inherit', outline: 'none', resize: 'vertical' }}
+                <input value={replyText} onChange={(e) => setReplyText(e.target.value)}
+                  placeholder="Type your reply..."
+                  style={{ flex: 1, padding: '8px 12px', background: 'var(--bg-elevated)', border: '1px solid var(--border)', borderRadius: 8, color: 'var(--text-primary)', fontSize: 14, fontFamily: 'inherit', outline: 'none' }}
                 />
-                <Button onClick={sendReply} loading={sending} icon={<Send size={16} />} style={{ alignSelf: 'flex-end' }}>Send</Button>
+                <Button size="sm" onClick={sendReply} disabled={sending || !replyText.trim()} icon={<Send size={14} />}>Send</Button>
               </div>
-              <div style={{ display: 'flex', gap: 6, marginTop: 8 }}>
-                {selectedTicket.status !== 'resolved' && (
-                  <Button size="sm" variant="secondary" onClick={() => updateStatus(selectedTicket.id, 'resolved')}>Mark Resolved</Button>
-                )}
-                {selectedTicket.status === 'resolved' && (
-                  <Button size="sm" variant="secondary" onClick={() => updateStatus(selectedTicket.id, 'open')}>Reopen</Button>
-                )}
-              </div>
+            </div>
+
+            <div style={{ borderTop: '1px solid var(--border)', paddingTop: 12, display: 'flex', gap: 8 }}>
+              {selectedTicket.status !== 'resolved' && <Button size="sm" variant="primary" onClick={() => updateStatus(selectedTicket.id, 'resolved')}>Mark Resolved</Button>}
+              {selectedTicket.status !== 'closed' && <Button size="sm" variant="secondary" onClick={() => updateStatus(selectedTicket.id, 'closed')}>Close</Button>}
+              {selectedTicket.status === 'closed' && <Button size="sm" variant="secondary" onClick={() => updateStatus(selectedTicket.id, 'open')}>Reopen</Button>}
             </div>
           </div>
         )}
