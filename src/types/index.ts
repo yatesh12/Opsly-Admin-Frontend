@@ -484,6 +484,7 @@ export interface PlanSummary {
   agent_limit: number
   storage_mb: number
   api_calls_limit: number
+  features: Record<string, any> | null
   is_active: boolean
   sort_order: number
   created_at: string
