@@ -10,13 +10,10 @@ import { Header } from '../components/layout/Header'
 import { Plus, Edit3, Trash2 } from 'lucide-react'
 import type { PaginatedPlans, PlanSummary } from '../types'
 
-function fmt(paise: number, currency = 'INR') {
-  if (currency === 'INR') return `₹${(paise / 100).toLocaleString('en-IN')}`
-  return `${currency} ${(paise / 100).toFixed(2)}`
+function fmt(price: number, currency = 'INR') {
+  if (currency === 'INR') return `₹${price.toLocaleString('en-IN')}`
+  return `${currency} ${price.toFixed(0)}`
 }
-
-function toRupees(paise: number) { return paise / 100 }
-function toPaise(rupees: number) { return Math.round(rupees * 100) }
 
 function formatFeatures(features: Record<string, any> | null): string {
   if (!features) return ''
@@ -187,8 +184,8 @@ export function PlansPage() {
             />
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
-            <Input label="Price (₹)" type="number" value={String(toRupees(form.price_paise))}
-              onChange={(e) => setForm({ ...form, price_paise: toPaise(Number(e.target.value)) })} />
+            <Input label="Price (₹)" type="number" value={String(form.price_paise)}
+              onChange={(e) => setForm({ ...form, price_paise: Number(e.target.value) })} />
             <Input label="Currency" value={form.currency} onChange={(e) => setForm({ ...form, currency: e.target.value })} placeholder="INR" />
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 12 }}>
