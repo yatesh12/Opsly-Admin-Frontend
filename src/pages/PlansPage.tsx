@@ -293,32 +293,20 @@ export function PlansPage() {
                     <div style={{ ...labelStyle, marginBottom: 8 }}>Features</div>
                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }}>
                       {Object.entries(f).map(([k, v]) => {
-                        if (k === 'build_features' || k === 'maintenance_features') return null
+                        if (k === 'build_features' || k === 'maintenance_features' || k === 'features') return null
                         return <FeatureBadge key={k} label={k} value={v} />
                       })}
                     </div>
                   </div>
                 )}
 
-                {/* ── Feature lists ── */}
-                {(f?.build_features || f?.maintenance_features) && (
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 0 }}>
-                    {f?.build_features && (
-                      <div style={{ padding: '14px 18px', borderRight: '1px solid var(--border)' }}>
-                        <div style={{ ...labelStyle, marginBottom: 6 }}>Build Features</div>
-                        <ul style={{ margin: 0, paddingLeft: 14, fontSize: 12, color: 'var(--text-secondary)', lineHeight: 1.8 }}>
-                          {(f.build_features as string[]).map((feat, i) => <li key={i}>{feat}</li>)}
-                        </ul>
-                      </div>
-                    )}
-                    {f?.maintenance_features && (
-                      <div style={{ padding: '14px 18px' }}>
-                        <div style={{ ...labelStyle, marginBottom: 6 }}>Maintenance Features</div>
-                        <ul style={{ margin: 0, paddingLeft: 14, fontSize: 12, color: 'var(--text-secondary)', lineHeight: 1.8 }}>
-                          {(f.maintenance_features as string[]).map((feat, i) => <li key={i}>{feat}</li>)}
-                        </ul>
-                      </div>
-                    )}
+                {/* ── Feature list ── */}
+                {f?.features && Array.isArray(f.features) && (
+                  <div style={{ padding: '14px 18px' }}>
+                    <div style={{ ...labelStyle, marginBottom: 6 }}>Features</div>
+                    <ul style={{ margin: 0, paddingLeft: 14, fontSize: 12, color: 'var(--text-secondary)', lineHeight: 1.8 }}>
+                      {(f.features as string[]).map((feat, i) => <li key={i}>{feat}</li>)}
+                    </ul>
                   </div>
                 )}
               </Card>
