@@ -5,9 +5,11 @@ import { AuthProvider } from './context/AuthContext'
 import App from './App'
 import './index.css'
 
+const routerBasename = (import.meta.env.VITE_BASE_PATH || '/admin/').replace(/\/+$/, '')
+
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <BrowserRouter>
+    <BrowserRouter basename={routerBasename}>
       <AuthProvider>
         <App />
       </AuthProvider>
