@@ -52,7 +52,7 @@ export function DpaPage() {
     try {
       const formData = new FormData()
       formData.append('file', file)
-      const token = localStorage.getItem('af_token')
+      const token = localStorage.getItem('admin_token')
       const res = await fetch(`${API_BASE_URL}/api/v1/admin/dpa/upload-pdf`, {
         method: 'POST',
         headers: token ? { Authorization: `Bearer ${token}` } : {},
