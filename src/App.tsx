@@ -16,7 +16,9 @@ import { SupportPage } from './pages/SupportPage'
 import { ContradictionsPage } from './pages/ContradictionsPage'
 import { AdminUsersPage } from './pages/AdminUsersPage'
 import { AuditLogPage } from './pages/AuditLogPage'
+import { DpaPage } from './pages/DpaPage'
 import { SettingsPage } from './pages/SettingsPage'
+import { HandoffsPage } from './pages/HandoffsPage'
 import { NotFoundPage } from './pages/NotFoundPage'
 
 export default function App() {
@@ -38,6 +40,8 @@ export default function App() {
         <Route path="/contradictions" element={<ContradictionsPage />} />
         <Route path="/admin-users" element={<AdminUsersPage />} />
         <Route path="/audit-log" element={<AuditLogPage />} />
+        <Route path="/dpa" element={<DpaPage />} />
+        <Route path="/handoffs" element={<HandoffsPage />} />
         <Route path="/settings" element={<SettingsPage />} />
       </Route>
       <Route path="*" element={<NotFoundPage />} />

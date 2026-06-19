@@ -1,7 +1,7 @@
 import { NavLink } from 'react-router-dom'
 import {
   LayoutDashboard, Users, Bot, BarChart3, MessageSquare, Settings, LogOut,
-  IndianRupee, FileText, Key, BrainCircuit, Building2, Package, Shield, Clock, AlertTriangle,
+  IndianRupee, FileText, Key, BrainCircuit, Building2, Package, Shield, Clock, AlertTriangle, FileCheck, PhoneForwarded,
 } from 'lucide-react'
 import { useAuth } from '../../context/AuthContext'
 
@@ -22,6 +22,8 @@ const adminNav = [
   { to: '/support', icon: MessageSquare, label: 'Support' },
   { to: '/contradictions', icon: AlertTriangle, label: 'Contradictions' },
   { to: '/admin-users', icon: Shield, label: 'Admin Users' },
+  { to: '/dpa', icon: FileCheck, label: 'DPA Management' },
+  { to: '/handoffs', icon: PhoneForwarded, label: 'Handoffs' },
   { to: '/audit-log', icon: Clock, label: 'Audit Log' },
   { to: '/settings', icon: Settings, label: 'Settings' },
 ]

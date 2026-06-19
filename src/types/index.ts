@@ -538,3 +538,32 @@ export interface PaginatedContradictions {
   per_page: number
   total_pages: number
 }
+
+// DPA
+export interface DpaTemplateSummary {
+  id: string
+  version: string
+  title: string
+  summary_text: string
+  effective_date: string
+  pdf_url: string
+  is_active: boolean
+  created_at: string
+  updated_at: string
+}
+
+export interface PaginatedDpaTemplates {
+  items: DpaTemplateSummary[]
+  total: number
+  page: number
+  per_page: number
+  total_pages: number
+}
+
+export interface DpaMetrics {
+  total_organisations: number
+  accepted_count: number
+  pending_count: number
+  reacceptance_required_count: number
+  adoption_percentage: number
+}
