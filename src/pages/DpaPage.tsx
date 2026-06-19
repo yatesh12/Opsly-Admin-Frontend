@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react'
 import { api } from '../services/api'
-import { API_BASE_URL } from '../config/constants'
 import { Card } from '../components/ui/Card'
 import { Button } from '../components/ui/Button'
 import { Spinner } from '../components/ui/Spinner'
@@ -52,14 +51,7 @@ export function DpaPage() {
     try {
       const formData = new FormData()
       formData.append('file', file)
-      const token = localStorage.getItem('admin_token')
-      const res = await fetch(`${API_BASE_URL}/api/v1/admin/dpa/upload-pdf`, {
-        method: 'POST',
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
-        body: formData,
-      })
-      if (!res.ok) throw new Error((await res.json()).detail || 'Upload failed')
-      const data = await res.json()
+      const data = await api.upload<{ url: string; filename: string; original_name: string; size_bytes: number }>('/api/v1/admin/dpa/upload-pdf', formData)
       setCreateForm(f => ({ ...f, pdf_url: data.url }))
       setUploadedFileName(file.name)
     } catch (err: any) {
