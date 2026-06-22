@@ -125,7 +125,6 @@ export function AgentsPage() {
               <div><label style={{ fontSize: 12, color: 'var(--text-muted)' }}>Name</label><p style={{ fontSize: 14, fontWeight: 600 }}>{selectedAgent.name}</p></div>
               <div><label style={{ fontSize: 12, color: 'var(--text-muted)' }}>User</label><p style={{ fontSize: 14 }}>{selectedAgent.user_email}</p></div>
               <div><label style={{ fontSize: 12, color: 'var(--text-muted)' }}>Status</label><p style={{ fontSize: 14 }}><Badge variant={(statusColors[selectedAgent.status] || 'default') as any}>{selectedAgent.status}</Badge></p></div>
-              <div><label style={{ fontSize: 12, color: 'var(--text-muted)' }}>Personality</label><p style={{ fontSize: 14 }}>{selectedAgent.personality_id || 'Classic'}</p></div>
               <div><label style={{ fontSize: 12, color: 'var(--text-muted)' }}>Documents</label><p style={{ fontSize: 14 }}>{selectedAgent.doc_count}</p></div>
               <div><label style={{ fontSize: 12, color: 'var(--text-muted)' }}>Chunks</label><p style={{ fontSize: 14 }}>{selectedAgent.total_chunks}</p></div>
               <div><label style={{ fontSize: 12, color: 'var(--text-muted)' }}>Conversations</label><p style={{ fontSize: 14 }}>{selectedAgent.conversation_count}</p></div>

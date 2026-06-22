@@ -129,7 +129,6 @@ export interface AgentSummary {
   name: string
   user_email: string
   status: string
-  personality_id: string | null
   doc_count: number
   total_chunks: number
   conversation_count: number
@@ -144,7 +143,6 @@ export interface AgentDetail {
   user_id: string
   user_email: string
   status: string
-  personality_id: string | null
   system_prompt: string | null
   doc_count: number
   total_chunks: number
