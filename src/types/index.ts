@@ -565,3 +565,31 @@ export interface DpaMetrics {
   reacceptance_required_count: number
   adoption_percentage: number
 }
+
+// Redis
+export interface RedisMetrics {
+  configured: boolean
+  healthy: boolean
+  latency_ms?: number
+  version?: string
+  mode?: string
+  uptime_seconds?: number
+  connected_clients?: number
+  blocked_clients?: number
+  used_memory_mb?: number
+  max_memory_mb?: number | null
+  memory_usage_pct?: number | null
+  total_keys?: number
+  total_commands_processed?: number
+  instantaneous_ops_per_sec?: number
+  rejected_connections?: number
+  expired_keys?: number
+  evicted_keys?: number
+  keyspace_hits?: number
+  keyspace_misses?: number
+  hit_rate_pct?: number
+  role?: string
+  aof_enabled?: boolean
+  error?: string
+  message?: string
+}
