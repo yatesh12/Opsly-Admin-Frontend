@@ -1,7 +1,7 @@
 import { NavLink } from 'react-router-dom'
 import {
   LayoutDashboard, Users, Bot, BarChart3, MessageSquare, Settings, LogOut,
-  IndianRupee, FileText, Key, BrainCircuit, Building2, Package, Shield, Clock, AlertTriangle, FileCheck, PhoneForwarded,
+  IndianRupee, FileText, Key, BrainCircuit, Building2, Package, Shield, Clock, AlertTriangle, FileCheck, PhoneForwarded, Activity, Radio,
 } from 'lucide-react'
 import { useAuth } from '../../context/AuthContext'
 
@@ -14,6 +14,15 @@ const mainNav = [
   { to: '/documents', icon: FileText, label: 'Documents' },
   { to: '/api-keys', icon: Key, label: 'API Keys' },
   { to: '/training', icon: BrainCircuit, label: 'Training' },
+]
+
+// Operator surfaces relocated out of the customer application (Phase 10).
+// Provider Management is intentionally absent: provider health lives in the
+// customer backend's process memory (HealthMonitor._health) and is never
+// persisted, so no other service can read it.
+const operationsNav = [
+  { to: '/observability', icon: Activity, label: 'Observability' },
+  { to: '/events', icon: Radio, label: 'Event Bus' },
 ]
 
 const adminNav = [
@@ -86,6 +95,13 @@ export function Sidebar() {
         <div style={{ fontSize: 10, fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', padding: '8px 12px 4px', letterSpacing: 1 }}>Platform</div>
         {mainNav.map((item) => (
           <NavLink key={item.to} to={item.to} end={item.to === '/'} style={({ isActive }) => linkStyle(isActive)}>
+            <item.icon size={18} />
+            {item.label}
+          </NavLink>
+        ))}
+        <div style={{ fontSize: 10, fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', padding: '12px 12px 4px', letterSpacing: 1, marginTop: 8 }}>Operations</div>
+        {operationsNav.map((item) => (
+          <NavLink key={item.to} to={item.to} style={({ isActive }) => linkStyle(isActive)}>
             <item.icon size={18} />
             {item.label}
           </NavLink>

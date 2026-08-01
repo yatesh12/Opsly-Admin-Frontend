@@ -18,6 +18,8 @@ import { AdminUsersPage } from './pages/AdminUsersPage'
 import { AuditLogPage } from './pages/AuditLogPage'
 import { DpaPage } from './pages/DpaPage'
 import { SettingsPage } from './pages/SettingsPage'
+import { ObservabilityPage } from './pages/ObservabilityPage'
+import { EventBusPage } from './pages/EventBusPage'
 import { HandoffsPage } from './pages/HandoffsPage'
 import { NotFoundPage } from './pages/NotFoundPage'
 
@@ -42,6 +44,8 @@ export default function App() {
         <Route path="/audit-log" element={<AuditLogPage />} />
         <Route path="/dpa" element={<DpaPage />} />
         <Route path="/handoffs" element={<HandoffsPage />} />
+        <Route path="/observability" element={<ObservabilityPage />} />
+        <Route path="/events" element={<EventBusPage />} />
         <Route path="/settings" element={<SettingsPage />} />
       </Route>
       <Route path="*" element={<NotFoundPage />} />
