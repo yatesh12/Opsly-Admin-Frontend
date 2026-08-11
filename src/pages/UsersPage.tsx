@@ -80,12 +80,25 @@ export function UsersPage() {
           </div>
           <select value={planFilter} onChange={(e) => { setPlanFilter(e.target.value); setPage(1) }}
             style={{ padding: '8px 12px', background: 'var(--bg-elevated)', border: '1px solid var(--border)', borderRadius: 8, color: 'var(--text-primary)', fontSize: 14, fontFamily: 'inherit', outline: 'none', width: 160 }}>
+            {/* This filter listed Builder and Pro — retired in Phase 2 — while
+                omitting Professional and Business, two of the four plans
+                actually sold. An operator could not filter for most of the
+                paying customer base. Retired ids stay available under a
+                labelled group so a legacy account is still findable, without
+                reading as current. */}
             <option value="">All Plans</option>
-            <option value="free">Free</option>
-            <option value="starter">Starter</option>
-            <option value="builder">Builder</option>
-            <option value="pro">Pro</option>
-            <option value="enterprise">Enterprise</option>
+            <optgroup label="Current">
+              <option value="free">Free</option>
+              <option value="starter">Starter</option>
+              <option value="professional">Professional</option>
+              <option value="business">Business</option>
+              <option value="enterprise">Enterprise</option>
+            </optgroup>
+            <optgroup label="Retired (not sold)">
+              <option value="builder">Builder</option>
+              <option value="pro">Pro</option>
+              <option value="payg">Pay as You Go</option>
+            </optgroup>
           </select>
         </div>
 

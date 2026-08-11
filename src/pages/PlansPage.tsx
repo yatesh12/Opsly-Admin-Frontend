@@ -7,7 +7,7 @@ import { Badge } from '../components/ui/Badge'
 import { Modal } from '../components/ui/Modal'
 import { Input } from '../components/ui/Input'
 import { Header } from '../components/layout/Header'
-import { Plus, Edit3, Trash2, IndianRupee, Users, HardDrive, Radio, Globe, Check, X } from 'lucide-react'
+import { IndianRupee, Users, HardDrive, Radio, Globe, Check, X } from 'lucide-react'
 import type { PaginatedPlans, PlanSummary } from '../types'
 
 function fmt(pricePaise: number, currency = 'INR') {
@@ -39,22 +39,6 @@ function formatFeatures(features: Record<string, any> | null): string {
     .join('\n')
 }
 
-function parseFeatures(text: string): Record<string, any> {
-  if (!text.trim()) return {}
-  const lines = text.trim().split('\n')
-  const result: Record<string, any> = {}
-  for (const line of lines) {
-    const sep = line.includes(':') ? ':' : '='
-    const idx = line.indexOf(sep)
-    if (idx > 0) {
-      const key = line.substring(0, idx).trim().toLowerCase().replace(/\s+/g, '_')
-      const val = line.substring(idx + 1).trim()
-      result[key] = isNaN(Number(val)) ? val : Number(val)
-    }
-  }
-  return result
-}
-
 function FeatureBadge({ label, value }: { label: string; value: any }) {
   const strVal = String(value)
   const isBool = typeof value === 'boolean'
@@ -80,22 +64,6 @@ function FeatureBadge({ label, value }: { label: string; value: any }) {
 export function PlansPage() {
   const [data, setData] = useState<PaginatedPlans | null>(null)
   const [loading, setLoading] = useState(true)
-  const [showModal, setShowModal] = useState(false)
-  const [editing, setEditing] = useState<PlanSummary | null>(null)
-  const [form, setForm] = useState({
-    name: '',
-    display_name: '',
-    description: '',
-    price_paise: 0,
-    currency: 'INR',
-    agent_limit: 1,
-    storage_mb: 100,
-    api_calls_limit: 1000,
-    features_text: '',
-    is_active: true,
-    sort_order: 0,
-  })
-  const [saving, setSaving] = useState(false)
 
   const fetchData = () => {
     setLoading(true)
@@ -105,66 +73,9 @@ export function PlansPage() {
 
   useEffect(() => { fetchData() }, [])
 
-  const openCreate = () => {
-    setEditing(null)
-    setForm({
-      name: '',
-      display_name: '',
-      description: '',
-      price_paise: 0,
-      currency: 'INR',
-      agent_limit: 1,
-      storage_mb: 100,
-      api_calls_limit: 1000,
-      features_text: '',
-      is_active: true,
-      sort_order: 0,
-    })
-    setShowModal(true)
-  }
-
-  const openEdit = (plan: PlanSummary) => {
-    setEditing(plan)
-    setForm({
-      name: plan.name,
-      display_name: plan.display_name,
-      description: plan.description || '',
-      price_paise: plan.price_paise,
-      currency: plan.currency,
-      agent_limit: plan.agent_limit,
-      storage_mb: plan.storage_mb,
-      api_calls_limit: plan.api_calls_limit,
-      features_text: formatFeatures(plan.features),
-      is_active: plan.is_active,
-      sort_order: plan.sort_order,
-    })
-    setShowModal(true)
-  }
-
-  const save = async () => {
-    setSaving(true)
-    try {
-      const body = {
-        ...form,
-        description: form.description || null,
-        features: parseFeatures(form.features_text),
-      }
-      if (editing) {
-        await api.patch(`/api/v1/admin/plans/${editing.id}`, body)
-      } else {
-        await api.post('/api/v1/admin/plans', body)
-      }
-      setShowModal(false)
-      fetchData()
-    } catch (err) { console.error(err) }
-    finally { setSaving(false) }
-  }
-
-  const deletePlan = async (planId: string) => {
-    if (!confirm('Delete this plan?')) return
-    try { await api.delete(`/api/v1/admin/plans/${planId}`); fetchData() }
-    catch (err) { console.error(err) }
-  }
+  // openCreate / openEdit / save / deletePlan were REMOVED in Phase 2 along
+  // with the admin write endpoints they called. Leaving them here would keep
+  // a one-line path back to editing live commercial terms.
 
   const sectionStyle: React.CSSProperties = {
     padding: '14px 18px', borderBottom: '1px solid var(--border)',
@@ -190,10 +101,27 @@ export function PlansPage() {
 
   return (
     <div>
-      <Header title="Plans" subtitle="Manage subscription plans" />
-      <div style={{ marginBottom: 16, display: 'flex', justifyContent: 'flex-end' }}>
-        <Button onClick={openCreate} icon={<Plus size={14} />}>Create Plan</Button>
-      </div>
+      <Header title="Plans" subtitle="Legacy plans table — read-only" />
+      {/* Create/Edit/Delete removed in Phase 2. This page wrote directly to the
+          `plans` table with no versioning, no audit and no effective date --
+          and that table was read by order creation and the storage/file-size
+          checks, so an edit here changed what a live subscriber was charged.
+          The commercial contract is now declared in code, immutable once
+          published, and each subscription pins the version governing it. */}
+      <Card padding="16" style={{ marginBottom: 16 }}>
+        <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 4 }}>
+          This table is no longer the commercial source of truth
+        </div>
+        <div style={{ fontSize: 12, color: 'var(--text-muted)', lineHeight: 1.6 }}>
+          Prices, limits and feature entitlements come from the versioned
+          commercial catalog in the application backend. This view shows the
+          legacy <code>plans</code> table, which is stale (no rows for
+          Professional or Business; still lists retired Builder and Pro) and is
+          scheduled for removal. Changing a price is a reviewed code change that
+          publishes a new catalog version — existing subscribers stay pinned to
+          the version they bought.
+        </div>
+      </Card>
 
       {loading ? <div style={{ display: 'flex', justifyContent: 'center', padding: 40 }}><Spinner /></div> : (
         <div style={{ display: 'grid', gap: 16 }}>
@@ -221,10 +149,8 @@ export function PlansPage() {
                     )}
                     <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>#{plan.sort_order}</span>
                   </div>
-                  <div style={{ display: 'flex', gap: 4 }}>
-                    <Button size="sm" variant="ghost" onClick={() => openEdit(plan)}><Edit3 size={14} /></Button>
-                    <Button size="sm" variant="ghost" onClick={() => deletePlan(plan.id)} style={{ color: '#ef4444' }}><Trash2 size={14} /></Button>
-                  </div>
+                  {/* Edit/Delete removed -- see the notice above. */}
+                  <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>read-only</span>
                 </div>
 
                 {/* ── Description ── */}
@@ -315,43 +241,7 @@ export function PlansPage() {
         </div>
       )}
 
-      <Modal isOpen={showModal} onClose={() => setShowModal(false)} title={editing ? 'Edit Plan' : 'Create Plan'} width={600}>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-          <Input label="Plan Name (slug)" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="e.g. starter" disabled={!!editing} />
-          <Input label="Display Name" value={form.display_name} onChange={(e) => setForm({ ...form, display_name: e.target.value })} placeholder="e.g. Starter" />
-          <div>
-            <label style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 4, display: 'block' }}>Description</label>
-            <textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })}
-              style={{ width: '100%', padding: '8px 12px', background: 'var(--bg-elevated)', border: '1px solid var(--border)', borderRadius: 8, color: 'var(--text-primary)', fontSize: 14, fontFamily: 'inherit', outline: 'none', minHeight: 60, resize: 'vertical' }}
-            />
-          </div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
-            <Input label="Price (paise)" type="number" value={String(form.price_paise)}
-              onChange={(e) => setForm({ ...form, price_paise: Math.round(Number(e.target.value)) })} />
-            <Input label="Currency" value={form.currency} onChange={(e) => setForm({ ...form, currency: e.target.value })} placeholder="INR" />
-          </div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 12 }}>
-            <Input label="Agent Limit" type="number" value={String(form.agent_limit)} onChange={(e) => setForm({ ...form, agent_limit: Number(e.target.value) })} />
-            <Input label="Storage (MB)" type="number" value={String(form.storage_mb)} onChange={(e) => setForm({ ...form, storage_mb: Number(e.target.value) })} />
-            <Input label="API Calls Limit" type="number" value={String(form.api_calls_limit)} onChange={(e) => setForm({ ...form, api_calls_limit: Number(e.target.value) })} />
-          </div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
-            <Input label="Sort Order" type="number" value={String(form.sort_order)} onChange={(e) => setForm({ ...form, sort_order: Number(e.target.value) })} />
-          </div>
-          <div>
-            <label style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 4, display: 'block' }}>Features (one per line, format: key: value)</label>
-            <textarea value={form.features_text} onChange={(e) => setForm({ ...form, features_text: e.target.value })}
-              placeholder={`e.g. priority_support: true\ncustom_branding: false\napi_access: true\nteam_seats: 5`}
-              style={{ width: '100%', padding: '8px 12px', background: 'var(--bg-elevated)', border: '1px solid var(--border)', borderRadius: 8, color: 'var(--text-primary)', fontSize: 14, fontFamily: 'inherit', outline: 'none', minHeight: 80, resize: 'vertical' }}
-            />
-          </div>
-          <label style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 14 }}>
-            <input type="checkbox" checked={form.is_active} onChange={(e) => setForm({ ...form, is_active: e.target.checked })} />
-            Active
-          </label>
-          <Button onClick={save} disabled={saving}>{saving ? 'Saving...' : editing ? 'Update Plan' : 'Create Plan'}</Button>
-        </div>
-      </Modal>
+
     </div>
   )
 }

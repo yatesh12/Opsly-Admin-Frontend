@@ -1,7 +1,7 @@
 import { NavLink } from 'react-router-dom'
 import {
   LayoutDashboard, Users, Bot, BarChart3, MessageSquare, Settings, LogOut,
-  IndianRupee, FileText, Key, BrainCircuit, Building2, Package, Shield, Clock, AlertTriangle, FileCheck, PhoneForwarded, Activity, Radio,
+  IndianRupee, FileText, Key, BrainCircuit, Building2, Package, Shield, Clock, AlertTriangle, FileCheck, PhoneForwarded, Activity, Radio, Mail, Repeat,
 } from 'lucide-react'
 import { useAuth } from '../../context/AuthContext'
 
@@ -23,6 +23,10 @@ const mainNav = [
 const operationsNav = [
   { to: '/observability', icon: Activity, label: 'Observability' },
   { to: '/events', icon: Radio, label: 'Event Bus' },
+  // Phase 4. Lifecycle is read-only: subscription state, transition history
+  // and email delivery, including the sends that were deliberately skipped.
+  { to: '/lifecycle', icon: Repeat, label: 'Lifecycle' },
+  { to: '/campaigns', icon: Mail, label: 'Campaigns' },
 ]
 
 const adminNav = [

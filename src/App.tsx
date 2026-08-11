@@ -12,6 +12,8 @@ import { ApiKeysPage } from './pages/ApiKeysPage'
 import { TrainingPage } from './pages/TrainingPage'
 import { OrganizationsPage } from './pages/OrganizationsPage'
 import { PlansPage } from './pages/PlansPage'
+import { CampaignsPage } from './pages/CampaignsPage'
+import { LifecyclePage } from './pages/LifecyclePage'
 import { SupportPage } from './pages/SupportPage'
 import { ContradictionsPage } from './pages/ContradictionsPage'
 import { AdminUsersPage } from './pages/AdminUsersPage'
@@ -46,6 +48,8 @@ export default function App() {
         <Route path="/handoffs" element={<HandoffsPage />} />
         <Route path="/observability" element={<ObservabilityPage />} />
         <Route path="/events" element={<EventBusPage />} />
+        <Route path="/lifecycle" element={<LifecyclePage />} />
+        <Route path="/campaigns" element={<CampaignsPage />} />
         <Route path="/settings" element={<SettingsPage />} />
       </Route>
       <Route path="*" element={<NotFoundPage />} />
